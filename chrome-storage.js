@@ -83,13 +83,23 @@ class ChromeStorage {
         const keys = this.parser(key)
 
         return new Promise(resolve => 
-            this._get(this.headKey(keys), e =>
-                resolve(
-                    this.is_nestedKey(keys) ? 
-                    keys.reduce((acc, cur) => acc[cur], e)
-                    :
-                    e[key])))
-
+            this._get(this.headKey(keys), e => {
+                if(!e){
+                    resolve(false);
+                }else{                     
+                    try {
+                        resolve(this.is_nestedKey(keys) ? 
+                        keys.reduce((acc, cur) => acc[cur], e)
+                        :
+                        e[key]
+                        )
+                    }catch(e){
+                        console.error(e)
+                        resolve(false)
+                    }
+                } 
+            })
+        )
     }
 
     async set(key, value) {
